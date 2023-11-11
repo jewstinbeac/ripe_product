@@ -12,18 +12,20 @@ def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
     try:
         openai.api_key = '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'
         
-        response = openai.Completion.create(
+        response = openai.chat.completions.create(
             model=model,
-            prompt=prompt,
+            messages=[
+                    {"role": "system", "content": "You are generating product descriptions based on individuals details of garments, these descriptions are roughly 400 characters."},
+                    {"role": "user", "content": prompt},
+                    ],
             max_tokens=max_tokens
         )
-        return response.choices[0].text.strip()
+        return response['choices'][0]['message']['content'].strip()
     except Exception as e:
         return str(e)
 
 def generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8):
     desc_prompt = f"""
-    You are generating product descriptions based on individuals details of garments, these descriptions are roughly 400 characters.
     3 examples are provided below:
 
     ```
@@ -146,4 +148,8 @@ if uploaded_file is not None:
     df['Generated Descriptions'] = descriptions
     df['Generated HTMLs'] = htmls
 
-    st.write(df.to_html(escape=False), unsafe_allow_html=True)
+    for i in range(len(df)):
+        st.write(f"Description {i+1}:")
+        st.write(df['Generated Descriptions'][i])
+        st.markdown(df['Generated HTMLs'][i], unsafe_allow_html=True)
+        st.write("---")
