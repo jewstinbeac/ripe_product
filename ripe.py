@@ -113,8 +113,8 @@ def convert_care_to_html(text):
     html_lines = [f"<li>{line.strip()}</li>" for line in lines if line.strip()]
     return "<ul>\n" + "\n".join(html_lines) + "\n</ul>"
 
-def generate_html(row_data):
-    description = format_description(row_data['Description'])
+def generate_html(row_data, description):
+    description = format_description(description)
 
     care_instructions = convert_care_to_html(row_data['Care Instructions'])
     html_template = f"""
@@ -168,7 +168,7 @@ if uploaded_file is not None:
                 description = generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8)
                 style_descriptions[style_code] = description
 
-                html = generate_html(row)
+                html = generate_html(row, description)
                 style_htmls[style_code] = description
 
                 descriptions.append(description)
