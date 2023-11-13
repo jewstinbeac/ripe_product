@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 
 # Title of the web application
 st.title('Ripe Product Descriptionizer 🍒')
-st.subheader('made with ❤️ by raava')
+st.write('made with ❤️ by raava')
 
 st.subheader('Instructions')
 
