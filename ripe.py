@@ -4,14 +4,19 @@ import openai
 from tempfile import NamedTemporaryFile
 
 # Title of the web application
-st.title('Excel File Upload and Analysis')
+st.title('Ripe Product Descrip[tionizer]')
+
+st.subheader('Instructions')
+
+# Input field for the user to enter their API key
+api_key = st.text_input("Enter your OpenAI API key")
 
 # File uploader allows user to add their own Excel file
 uploaded_file = st.file_uploader("Upload your Excel file", type=["xlsx"])
 
 def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
     try:
-        openai.api_key = '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'
+        openai.api_key = api_key
         
         response = openai.chat.completions.create(
             model=model,
