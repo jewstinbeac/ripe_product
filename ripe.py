@@ -104,10 +104,12 @@ def format_description(description):
     return '<br><br>'.join(filter(None, description.split('\n')))
 
 def strip_bullet_points(text):
+    text = str(text)
     characters_to_strip = '•*- '
     return text.lstrip(characters_to_strip)
 
 def convert_care_to_html(text):
+    text = str(text)
     lines = text.split('\n')
     html_lines = [f"<li>{line.strip()}</li>" for line in lines if line.strip()]
     return "<ul>\n" + "\n".join(html_lines) + "\n</ul>"
@@ -133,6 +135,60 @@ def generate_html(row_data, description):
     """
     return html_template.strip()
 
+def process_row(row, style_descriptions, style_htmls):
+    style_code = row['Style Code']
+    product_name = row['Product Name']
+    colour_code = row['Colour Code']
+    colour_name = row['Colour Name']
+    dp_1 = row['Dot Point 1']
+    dp_2 = row['Dot Point 2']
+    dp_3 = row['Dot Point 3']
+    dp_4 = row['Dot Point 4']
+    dp_5 = row['Dot Point 5']
+    dp_6 = row['Dot Point 6']
+    dp_7 = row['Dot Point 7']
+    dp_8 = row['Dot Point 8']
+
+    point_list = [dp_1,dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8]
+    print(point_list)
+
+    if any(str(point) == 'nan' for point in point_list):
+        description = ''
+        html = ''
+        st.write('empty row')
+    elif style_code not in style_descriptions:
+        description = generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8)
+        html = generate_html(row, description)
+        style_descriptions[style_code] = description
+        style_htmls[style_code] = description
+        st.subheader(style_code + ' ' + product_name)
+        st.write('---------------')
+        st.write('Description')
+        st.write('---------------')
+        st.write(description)
+        st.write('---------------')
+        st.write('HTML')
+        st.write('---------------')
+        st.code(html)
+    else:
+        description = style_descriptions[style_code]
+        html = style_htmls[style_code]
+
+    return description, html
+
+def process_dataframe(df):
+    descriptions = []
+    htmls = []
+    style_descriptions = {}
+    style_htmls = {}
+
+    for index, row in df.iterrows():
+        description, html = process_row(row, style_descriptions, style_htmls)
+        descriptions.append(description)
+        htmls.append(html)
+
+    return descriptions, htmls
+
 if uploaded_file is not None:
     workbook = pd.ExcelFile(uploaded_file)
 
@@ -142,62 +198,15 @@ if uploaded_file is not None:
 
     if submit_button:
         df = pd.read_excel(workbook, sheet_name=sheet_name)
+        descriptions, htmls = process_dataframe(df)
 
-        descriptions = []
-        htmls = []
-
-        style_descriptions = {}
-        style_htmls = {}
-
-        for index, row in df.iterrows():
-            style_code = row['Style Code']
-            product_name = row['Product Name']
-            colour_code = row['Colour Code']
-            colour_name = row['Colour Name']
-            dp_1 = row['Dot Point 1']
-            dp_2 = row['Dot Point 2']
-            dp_3 = row['Dot Point 3']
-            dp_4 = row['Dot Point 4']
-            dp_5 = row['Dot Point 5']
-            dp_6 = row['Dot Point 6']
-            dp_7 = row['Dot Point 7']
-            dp_8 = row['Dot Point 8']
-
-            if style_code not in style_descriptions:
-                description = generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8)
-                style_descriptions[style_code] = description
-
-                html = generate_html(row, description)
-                style_htmls[style_code] = description
-
-                descriptions.append(description)
-                htmls.append(html)
-                st.subheader(style_code + ' ' + product_name)
-                st.write('---------------')
-                st.write('Description')
-                st.write('---------------')
-                st.write(description)
-                st.write('---------------')
-                st.write('HTML')
-                st.write('---------------')
-                st.code(html)
-
-            else:
-                # If style_code is already processed, use the existing description and HTML
-                descriptions.append(style_descriptions[style_code])
-                htmls.append(style_htmls[style_code])
-
-        # Add descriptions and HTML as a new column in the DataFrame
-        data = {'Generated Descriptions': descriptions,
-                  'Generated HTMLs': htmls}
-        
+        data = {'Generated Descriptions': descriptions, 'Generated HTMLs': htmls}
         new_df = pd.DataFrame(data)
 
-        # Save the DataFrame to an Excel file
         with NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
             new_df.to_excel(tmp.name, index=False)
             tmp.seek(0)
-            data = tmp.read()  # Read the file's content as binary data
+            data = tmp.read()
             st.sidebar.download_button(
                 label="Download Sheet with descriptions and HTML",
                 data=data,
