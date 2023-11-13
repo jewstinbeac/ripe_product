@@ -7,8 +7,6 @@ from tempfile import NamedTemporaryFile
 st.title('Ripe Product Descriptionizer 🍒')
 st.write('made with ❤️ by raava')
 
-st.subheader('Instructions')
-
 # Input field for the user to enter their API key
 api_key = st.text_input("Enter your OpenAI API key")
 
@@ -154,8 +152,8 @@ if uploaded_file is not None:
         for index, row in df.iterrows():
             style_code = row['Style Code']
             product_name = row['Product Name']
-            colour_code = row['Clr Code']
-            colour_name = row['Clr Name']
+            colour_code = row['Colour Code']
+            colour_name = row['Colour Name']
             dp_1 = row['Dot Point 1']
             dp_2 = row['Dot Point 2']
             dp_3 = row['Dot Point 3']
