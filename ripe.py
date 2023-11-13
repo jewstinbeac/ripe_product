@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import openai
+from tempfile import NamedTemporaryFile
 
 # Title of the web application
 st.title('Excel File Upload and Analysis')
@@ -20,7 +21,7 @@ def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
                     ],
             max_tokens=max_tokens
         )
-        return response['choices'][0]['message']['content'].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         return str(e)
 
@@ -34,9 +35,9 @@ def generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_
     •  Length: 93cm (size small)	•  Relaxed Fit    	•  Printed woven viscose	• 100% viscose	•  Round Neckline  	•  Button up front is nursing friendly	•  Elbow Length Sleeve 	•  Nursing
 
     Description:
-    "One of our best-selling styles has been recreated in this beautiful, earthy-toned and warm pattern. This shirt dress with all-over  print, cuffed elbow length sleeves, an empire seam, and gathered skirt can be buttoned down, or worn open as a duster over your swimsuit or shorts. It’s the easiest throw-on-and-go dress for expecting mothers, and those nursing thanks to the buttons! 
+    One of our best-selling styles has been recreated in this beautiful, earthy-toned and warm pattern. This shirt dress with all-over  print, cuffed elbow length sleeves, an empire seam, and gathered skirt can be buttoned down, or worn open as a duster over your swimsuit or shorts. It’s the easiest throw-on-and-go dress for expecting mothers, and those nursing thanks to the buttons! 
     
-    This effortless summer dress is our go-to with sneakers or slides. "
+    This effortless summer dress is our go-to with sneakers or slides. 
     ```
 
     ```
@@ -45,9 +46,9 @@ def generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_
     •  Length: 99cm (size small without straps)	•  Fitted bodice with gathered skirt	•  Printed woven cotton	• 100% cotton	•  Removable straps 	•  Wear as a dress with or without the straps or wear as a skirt	•  Sleeveless 	•  Non nursing
 
     Description:
-    "The Capri Shirred Dress is your go-to dress this season with endless styling possibilities. Framed with a square smocked bodice, removable straps, and gathered skirt with frill, this dress is a core wardrobe piece.
+    The Capri Shirred Dress is your go-to dress this season with endless styling possibilities. Framed with a square smocked bodice, removable straps, and gathered skirt with frill, this dress is a core wardrobe piece.
 
-    Style this dress on its own – or create an alternate look by styling it as a skirt with the Clara Relaxed Shirt tied under the bust. You can also remove the shoulder for a strapless look. "
+    Style this dress on its own – or create an alternate look by styling it as a skirt with the Clara Relaxed Shirt tied under the bust. You can also remove the shoulder for a strapless look. 
     ```
 
     ```
@@ -56,7 +57,7 @@ def generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_
     •  Length: 75cm inleg	• Relaxed fit	• Soft woven Tencel	• 100% lyocell	• Elastic waistband 	• Straight leg	•  Front rise 32cm (size small)	•  Leg opening 52cm (size small)
 
     Description:
-    "We know you love our Tencel Off Duty Pant, so we reimagined the style and fit into your new favourite cargo pant! Made with an elastic waistband for built-in comfort, the Logan Cargo Pant features a straight leg, side pockets, and adjustable hems so you can create your own look. More lightweight than you'd expect, these cargos are easy to dress up or down. 
+    We know you love our Tencel Off Duty Pant, so we reimagined the style and fit into your new favourite cargo pant! Made with an elastic waistband for built-in comfort, the Logan Cargo Pant features a straight leg, side pockets, and adjustable hems so you can create your own look. More lightweight than you'd expect, these cargos are easy to dress up or down. 
 
     Style yours with our Luxe Knit Tank Top and sneakers for easy off duty style.
     "
@@ -102,8 +103,15 @@ def strip_bullet_points(text):
     characters_to_strip = '•*- '
     return text.lstrip(characters_to_strip)
 
+def convert_care_to_html(text):
+    lines = text.split('\n')
+    html_lines = [f"<li>{line.strip()}</li>" for line in lines if line.strip()]
+    return "<ul>\n" + "\n".join(html_lines) + "\n</ul>"
+
 def generate_html(row_data):
     description = format_description(row_data['Description'])
+
+    care_instructions = convert_care_to_html(row_data['Care Instructions'])
     html_template = f"""
     {description}
     <br><br>
@@ -117,39 +125,81 @@ def generate_html(row_data):
         <li>{strip_bullet_points(row_data['Dot Point 4'])}</li>
         <li>{strip_bullet_points(row_data['Dot Point 1'])}</li>
     </ul>
+    {care_instructions}
     """
     return html_template.strip()
 
 if uploaded_file is not None:
-    df = pd.read_excel(uploaded_file)
+    workbook = pd.ExcelFile(uploaded_file)
 
-    descriptions = []
-    htmls = []
+    with st.form(key='form_select'):
+        sheet_name = st.selectbox("Select a sheet", workbook.sheet_names)
+        submit_button = st.form_submit_button(label='Do it :)')
 
-    for index, row in df.iterrows():
-        product_name = row['Product Name']
-        colour_code = row['Clr Code']
-        colour_name = row['Clr Name']
-        dp_1 = row['Dot Point 1']
-        dp_2 = row['Dot Point 2']
-        dp_3 = row['Dot Point 3']
-        dp_4 = row['Dot Point 4']
-        dp_5 = row['Dot Point 5']
-        dp_6 = row['Dot Point 6']
-        dp_7 = row['Dot Point 7']
-        dp_8 = row['Dot Point 8']
+    if submit_button:
+        df = pd.read_excel(workbook, sheet_name=sheet_name)
 
-        description = generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8)
-        descriptions.append(description)
+        descriptions = []
+        htmls = []
 
-        html = generate_html(row)
-        htmls.append(html)
+        style_descriptions = {}
+        style_htmls = {}
 
-    df['Generated Descriptions'] = descriptions
-    df['Generated HTMLs'] = htmls
+        for index, row in df.iterrows():
+            style_code = row['Style Code']
+            product_name = row['Product Name']
+            colour_code = row['Clr Code']
+            colour_name = row['Clr Name']
+            dp_1 = row['Dot Point 1']
+            dp_2 = row['Dot Point 2']
+            dp_3 = row['Dot Point 3']
+            dp_4 = row['Dot Point 4']
+            dp_5 = row['Dot Point 5']
+            dp_6 = row['Dot Point 6']
+            dp_7 = row['Dot Point 7']
+            dp_8 = row['Dot Point 8']
 
-    for i in range(len(df)):
-        st.write(f"Description {i+1}:")
-        st.write(df['Generated Descriptions'][i])
-        st.markdown(df['Generated HTMLs'][i], unsafe_allow_html=True)
-        st.write("---")
+            if style_code not in style_descriptions:
+                description = generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8)
+                style_descriptions[style_code] = description
+
+                html = generate_html(row)
+                style_htmls[style_code] = description
+
+                descriptions.append(description)
+                htmls.append(html)
+                st.subheader(style_code + ' ' + product_name)
+                st.write('---------------')
+                st.write('Description')
+                st.write('---------------')
+                st.write(description)
+                st.write('---------------')
+                st.write('HTML')
+                st.write('---------------')
+                st.code(html)
+
+            else:
+                # If style_code is already processed, use the existing description and HTML
+                descriptions.append(style_descriptions[style_code])
+                htmls.append(style_htmls[style_code])
+
+        # Add descriptions and HTML as a new column in the DataFrame
+        data = {'Generated Descriptions': descriptions,
+                  'Generated HTMLs': htmls}
+        
+        new_df = pd.DataFrame(data)
+
+        # Save the DataFrame to an Excel file
+        with NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
+            new_df.to_excel(tmp.name, index=False)
+            tmp.seek(0)
+            data = tmp.read()  # Read the file's content as binary data
+            st.sidebar.download_button(
+                label="Download Sheet with descriptions and HTML",
+                data=data,
+                file_name='db_with_descriptions.xlsx',
+                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+
+
+ 
