@@ -29,13 +29,13 @@ def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
     except Exception as e:
         return str(e)
 
-def generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8):
+def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8):
     desc_prompt = f"""
     3 examples are provided below:
 
     ```
     Details:
-    Celest Button Through Dress	Lapis	Lapis
+    Celest Button Through Dress
     •  Length: 93cm (size small)	•  Relaxed Fit    	•  Printed woven viscose	• 100% viscose	•  Round Neckline  	•  Button up front is nursing friendly	•  Elbow Length Sleeve 	•  Nursing
 
     Description:
@@ -46,7 +46,7 @@ def generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_
 
     ```
     Details:
-    Capri Shirred Dress 	WhLapis	White / Lapis
+    Capri Shirred Dress
     •  Length: 99cm (size small without straps)	•  Fitted bodice with gathered skirt	•  Printed woven cotton	• 100% cotton	•  Removable straps 	•  Wear as a dress with or without the straps or wear as a skirt	•  Sleeveless 	•  Non nursing
 
     Description:
@@ -57,7 +57,7 @@ def generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_
 
     ```
     Details:
-    Logan Cargo Pant 	Choco	Chocolate 
+    Logan Cargo Pant
     •  Length: 75cm inleg	• Relaxed fit	• Soft woven Tencel	• 100% lyocell	• Elastic waistband 	• Straight leg	•  Front rise 32cm (size small)	•  Leg opening 52cm (size small)
 
     Description:
@@ -94,7 +94,7 @@ def generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_
     --------
 
     Please generate a description for the following details. DO NOT REFERENCE THE NUMERICAL LENGTHS OF THE GARMENT. IMPORTANT: KEEP YOUR DESCRIPTIONS TO 400 CHARACTERS:
-    {product_name} 	{colour_code}	{colour_name}
+    {product_name}
     {dp_1}	{dp_2}	{dp_3}	{dp_4} 	{dp_5}	{dp_6} 	{dp_7}  {dp_8}
     """
 
@@ -157,7 +157,7 @@ def process_row(row, style_descriptions, style_htmls):
         html = ''
         st.write('empty row')
     elif style_code not in style_descriptions:
-        description = generate_description(product_name, colour_code, colour_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8)
+        description = generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8)
         html = generate_html(row, description)
         style_descriptions[style_code] = description
         style_htmls[style_code] = description
