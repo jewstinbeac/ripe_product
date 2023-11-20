@@ -107,7 +107,8 @@ def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7,
 
     Description:
     We know you love our Tencel Off Duty Pant, so we reimagined the style and fit into your new favourite cargo pant! Made with an elastic waistband for built-in comfort, the Logan Cargo Pant features a straight leg, side pockets, and adjustable hems so you can create your own look. More lightweight than you'd expect, these cargos are easy to dress up or down.
-Style yours with our Luxe Knit Tank Top and sneakers for easy off duty style.
+    
+    Style yours with our Luxe Knit Tank Top and sneakers for easy off duty style.
     "
     ```
 
