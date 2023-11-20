@@ -106,9 +106,8 @@ def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7,
     •  Length: 75cm inleg	• Relaxed fit	• Soft woven Tencel	• 100% lyocell	• Elastic waistband 	• Straight leg	•  Front rise 32cm (size small)	•  Leg opening 52cm (size small)
 
     Description:
-    We know you love our Tencel Off Duty Pant, so we reimagined the style and fit into your new favourite cargo pant! Made with an elastic waistband for built-in comfort, the Logan Cargo Pant features a straight leg, side pockets, and adjustable hems so you can create your own look. More lightweight than you'd expect, these cargos are easy to dress up or down. 
-
-    Style yours with our Luxe Knit Tank Top and sneakers for easy off duty style.
+    We know you love our Tencel Off Duty Pant, so we reimagined the style and fit into your new favourite cargo pant! Made with an elastic waistband for built-in comfort, the Logan Cargo Pant features a straight leg, side pockets, and adjustable hems so you can create your own look. More lightweight than you'd expect, these cargos are easy to dress up or down.
+Style yours with our Luxe Knit Tank Top and sneakers for easy off duty style.
     "
     ```
 
@@ -116,7 +115,7 @@ def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7,
 
     Start with an Engaging Hook: Begin each description with a compelling feature that captures the essence of the product. Use adjectives that convey luxury or ease.
 
-    Focus on Fabric and Feel: Describe the materials used with sensory language that evokes a tactile response. Give the reader an idea of how the fabric feels against the skin, which is especially important for maternity wear.
+Focus on Visual Appeal: stress the visual appeal of the product.
 
     Detail the Design: Highlight key design features such as "button-up front," "smocked bodice," or "removable belted waist." Be specific about the elements that add to the functionality and style, like sleeve length, type of closure, and type of neckline.
 
@@ -138,7 +137,7 @@ def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7,
 
     --------
 
-    Please generate a description for the following details. DO NOT REFERENCE THE NUMERICAL LENGTHS OF THE GARMENT. IMPORTANT: KEEP YOUR DESCRIPTIONS TO 400 CHARACTERS:
+    Please generate a description for the following details. Avoid using too many references to the materials and fabrics. DO NOT REFERENCE THE NUMERICAL LENGTHS OF THE GARMENT. IMPORTANT: KEEP YOUR DESCRIPTIONS TO 400 CHARACTERS:
     {product_name}
     {dp_1}	{dp_2}	{dp_3}	{dp_4} 	{dp_5}	{dp_6} 	{dp_7}  {dp_8}
     """
