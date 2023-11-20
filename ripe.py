@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import openai
+import random
+import time
 from tempfile import NamedTemporaryFile
 
 # Title of the web application
@@ -13,21 +15,64 @@ api_key = st.text_input("Enter your OpenAI API key")
 # File uploader allows user to add their own Excel file
 uploaded_file = st.file_uploader("Upload your Excel file", type=["xlsx"])
 
+# define a retry decorator
+def retry_with_exponential_backoff(
+    func,
+    initial_delay: float = 1,
+    exponential_base: float = 2,
+    jitter: bool = True,
+    max_retries: int = 20,
+    errors: tuple = (openai.error.RateLimitError,),
+):
+    """Retry a function with exponential backoff."""
+
+    def wrapper(*args, **kwargs):
+        # Initialize variables
+        num_retries = 0
+        delay = initial_delay
+
+        # Loop until a successful response or max_retries is hit or an exception is raised
+        while True:
+            try:
+                return func(*args, **kwargs)
+
+            # Retry on specified errors
+            except errors as e:
+                # Increment retries
+                num_retries += 1
+
+                # Check if max retries has been reached
+                if num_retries > max_retries:
+                    raise Exception(
+                        f"Maximum number of retries ({max_retries}) exceeded."
+                    )
+
+                # Increment the delay
+                delay *= exponential_base * (1 + jitter * random.random())
+
+                # Sleep for the delay
+                time.sleep(delay)
+
+            # Raise exceptions for any errors not specified
+            except Exception as e:
+                raise e
+
+    return wrapper
+
+@retry_with_exponential_backoff
 def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
-    try:
-        openai.api_key = api_key
-        
-        response = openai.chat.completions.create(
-            model=model,
-            messages=[
-                    {"role": "system", "content": "You are generating product descriptions based on individuals details of garments, these descriptions are roughly 400 characters."},
-                    {"role": "user", "content": prompt},
-                    ],
-            max_tokens=max_tokens
-        )
-        return response.choices[0].message.content.strip()
-    except Exception as e:
-        return str(e)
+    openai.api_key = api_key
+    
+    response = openai.chat.completions.create(
+        model=model,
+        messages=[
+                {"role": "system", "content": "You are generating product descriptions based on individuals details of garments, these descriptions are roughly 400 characters."},
+                {"role": "user", "content": prompt},
+                ],
+        max_tokens=max_tokens
+    )
+    return response.choices[0].message.content.strip()
+
 
 def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8):
     desc_prompt = f"""
