@@ -224,10 +224,12 @@ def process_row(row, style_descriptions, style_htmls, alt_style_descriptions, al
         st.write('Description')
         st.write('---------------')
         st.write(description)
+        st.write(alt_description)
         st.write('---------------')
         st.write('HTML')
         st.write('---------------')
         st.code(html)
+        st.code(alt_html)
     else:
         description = style_descriptions[style_code]
         html = style_htmls[style_code]
