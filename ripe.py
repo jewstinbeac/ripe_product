@@ -144,6 +144,16 @@ Focus on Visual Appeal: stress the visual appeal of the product.
 
     return chat_with_gpt4(desc_prompt)
 
+
+def generate_alternative_description(description):
+    prompt = f"""
+    This is a product description for a garment by a company called Ripe. Please rewrite the description by simply adding in the term Ripe before the name of the garment in a grammatically appropriate manner.
+
+    {description}
+    """
+    
+    return chat_with_gpt4(prompt)
+
 def format_description(description):
     return '<br><br>'.join(filter(None, description.split('\n')))
 
@@ -179,7 +189,7 @@ def generate_html(row_data, description):
     """
     return html_template.strip()
 
-def process_row(row, style_descriptions, style_htmls):
+def process_row(row, style_descriptions, style_htmls, alt_style_descriptions, alt_style_htmls):
     style_code = row['Style Code']
     product_name = row['Product Name']
     colour_code = row['Colour Code']
@@ -203,8 +213,12 @@ def process_row(row, style_descriptions, style_htmls):
     elif style_code not in style_descriptions:
         description = generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8)
         html = generate_html(row, description)
+        alt_description = generate_alternative_description(description)
+        alt_html = generate_html(row, alt_description)
         style_descriptions[style_code] = description
-        style_htmls[style_code] = description
+        style_htmls[style_code] = html
+        style_descriptions[style_code] = alt_description
+        style_htmls[style_code] = alt_html
         st.subheader(style_code + ' ' + product_name)
         st.write('---------------')
         st.write('Description')
@@ -217,21 +231,29 @@ def process_row(row, style_descriptions, style_htmls):
     else:
         description = style_descriptions[style_code]
         html = style_htmls[style_code]
+        alt_description = alt_style_descriptions[style_code]
+        alt_html = alt_style_htmls[style_code]
 
-    return description, html
+    return description, html, alt_description, alt_html
 
 def process_dataframe(df):
     descriptions = []
     htmls = []
     style_descriptions = {}
     style_htmls = {}
+    alt_descriptions = []
+    alt_htmls = []
+    alt_style_descriptions = {}
+    alt_style_htmls = {}
 
     for index, row in df.iterrows():
-        description, html = process_row(row, style_descriptions, style_htmls)
+        description, html, alt_description, alt_html = process_row(row, style_descriptions, style_htmls, alt_style_descriptions, alt_style_htmls)
         descriptions.append(description)
         htmls.append(html)
+        alt_descriptions.append(alt_description)
+        alt_htmls.append(alt_html)
 
-    return descriptions, htmls
+    return descriptions, htmls, alt_descriptions, alt_htmls
 
 if uploaded_file is not None:
     workbook = pd.ExcelFile(uploaded_file)
@@ -242,9 +264,9 @@ if uploaded_file is not None:
 
     if submit_button:
         df = pd.read_excel(workbook, sheet_name=sheet_name)
-        descriptions, htmls = process_dataframe(df)
+        descriptions, htmls, alt_descriptions, alt_htmls = process_dataframe(df)
 
-        data = {'Generated Descriptions': descriptions, 'Generated HTMLs': htmls}
+        data = {'Generated Descriptions': descriptions, 'Generated HTMLs': htmls, , 'Alternative Descriptions': alt_descriptions, 'Alternative HTMLs': alt_htmls}
         new_df = pd.DataFrame(data)
 
         with NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
