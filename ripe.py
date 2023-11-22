@@ -266,7 +266,7 @@ if uploaded_file is not None:
         df = pd.read_excel(workbook, sheet_name=sheet_name)
         descriptions, htmls, alt_descriptions, alt_htmls = process_dataframe(df)
 
-        data = {'Generated Descriptions': descriptions, 'Generated HTMLs': htmls, , 'Alternative Descriptions': alt_descriptions, 'Alternative HTMLs': alt_htmls}
+        data = {'Generated Descriptions': descriptions, 'Generated HTMLs': htmls, 'Alternative Descriptions': alt_descriptions, 'Alternative HTMLs': alt_htmls}
         new_df = pd.DataFrame(data)
 
         with NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
