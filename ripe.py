@@ -217,8 +217,8 @@ def process_row(row, style_descriptions, style_htmls, alt_style_descriptions, al
         alt_html = generate_html(row, alt_description)
         style_descriptions[style_code] = description
         style_htmls[style_code] = html
-        style_descriptions[style_code] = alt_description
-        style_htmls[style_code] = alt_html
+        alt_style_descriptions[style_code] = alt_description
+        alt_style_htmls[style_code] = alt_html
         st.subheader(style_code + ' ' + product_name)
         st.write('---------------')
         st.write('Description')
