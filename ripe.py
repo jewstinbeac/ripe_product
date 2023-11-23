@@ -74,7 +74,7 @@ def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
     return response.choices[0].message.content.strip()
 
 
-def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8):
+def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7='', dp_8=''):
     desc_prompt = f"""
     3 examples are provided below:
 
@@ -195,14 +195,14 @@ def process_row(row, style_descriptions, style_htmls, alt_style_descriptions, al
     product_name = row['Product Name']
     colour_code = row['Colour Code']
     colour_name = row['Colour Name']
-    dp_1 = row['Dot Point 1']
-    dp_2 = row['Dot Point 2']
-    dp_3 = row['Dot Point 3']
-    dp_4 = row['Dot Point 4']
-    dp_5 = row['Dot Point 5']
-    dp_6 = row['Dot Point 6']
-    dp_7 = row['Dot Point 7']
-    dp_8 = row['Dot Point 8']
+    dp_1 = row['Dot Point 1'].fillna('')
+    dp_2 = row['Dot Point 2'].fillna('')
+    dp_3 = row['Dot Point 3'].fillna('')
+    dp_4 = row['Dot Point 4'].fillna('')
+    dp_5 = row['Dot Point 5'].fillna('')
+    dp_6 = row['Dot Point 6'].fillna('')
+    dp_7 = row['Dot Point 7'].fillna('')
+    dp_8 = row['Dot Point 8'].fillna('')
 
     point_list = [dp_1,dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8]
     print(point_list)
