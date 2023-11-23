@@ -149,6 +149,7 @@ def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7=
 def generate_alternative_description(description):
     prompt = f"""
     This is a product description for a garment by a company called Ripe. Please rewrite the description by simply adding in the term Ripe before the name of the garment in a grammatically appropriate manner.
+    Ensure you write Ripe only once upon the first mention of the garment name. The rest of the product description should be left exactly the same.
 
     {description}
     """
