@@ -60,7 +60,7 @@ def retry_with_exponential_backoff(
     return wrapper
 
 @retry_with_exponential_backoff
-def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
+def chat_with_gpt4(prompt, model="gpt-4o", max_tokens=200):
     openai.api_key = api_key
     
     response = openai.chat.completions.create(
@@ -76,71 +76,89 @@ def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
 
 def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7='', dp_8=''):
     desc_prompt = f"""
-    3 examples are provided below:
+    Examples:
 
-    ```
-    Details:
-    Celest Button Through Dress
-    •  Length: 93cm (size small)	•  Relaxed Fit    	•  Printed woven viscose	• 100% viscose	•  Round Neckline  	•  Button up front is nursing friendly	•  Elbow Length Sleeve 	•  Nursing
-
-    Description:
-    One of our best-selling styles has been recreated in this beautiful, earthy-toned and warm pattern. This shirt dress with all-over  print, cuffed elbow length sleeves, an empire seam, and gathered skirt can be buttoned down, or worn open as a duster over your swimsuit or shorts. It’s the easiest throw-on-and-go dress for expecting mothers, and those nursing thanks to the buttons! 
+    Example 1:
     
-    This effortless summer dress is our go-to with sneakers or slides. 
-    ```
+    "Embrace effortless elegance with the Nala Knot Front Knit. This comfy go-to staple features a semi-fitted, fully fashioned knit design with a chic crossover that adds a pop of character. The generous V-neckline, cropped length, and long sleeves make it the perfect layering piece you'll reach for time and time again—pairing easily with skirts, dresses, and high-waisted pants."
+    
+    Example 2:
+    
+    "Step into the season with the Marni Mesh Skirt, crafted from a beautiful print mesh jersey that feels like wearing nothing at all. Designed with an elastic waistband for maximum comfort, this midi skirt features a straight silhouette that skims your body and a side split for added flair. Pair it with our Jodie Ruched Rib Tank for an effortlessly cool ensemble, or throw on your favorite knitwear for a versatile, all-season essential."
 
-    ```
+    Instructions:
+    
+    Please generate a product description that emulates the tone and style of the examples provided, aiming for a blend of descriptive elegance, practical detailing, and lifestyle integration.
+    
+    Your description should:
+    
+    Start with an Engaging Hook:
+    
+    Begin with a captivating sentence that highlights a standout feature of the product.
+    Use compelling adjectives and phrases to immediately draw the reader in.
+    Example: "Embrace effortless elegance with our..."
+    Highlight the Fabric and Feel:
+    
+    Describe the material using sensory language that evokes touch and comfort.
+    Mention the quality, texture, and any special characteristics of the fabric.
+    Convey how the fabric feels against the skin (e.g., "buttery soft," "lightweight and breathable").
+    Emphasize any benefits like stretch, warmth, or breathability.
+    Detail Key Design Features:
+    
+    Specify elements that add to both functionality and style.
+    Mention neckline styles, sleeve lengths, closures, patterns, or unique embellishments.
+    Highlight features that make the garment stand out (e.g., "elegant drape," "sleek silhouette").
+    Include any design details that are fashionable or on-trend.
+    Emphasize Functionality:
+    
+    Point out features that cater to maternity needs, such as nursing access, adjustable fits, or comfort-enhancing elements.
+    Use phrases that directly address the needs of expecting or nursing mothers.
+    Example: "Thoughtfully designed with discreet nursing access for your convenience."
+    Set the Scene:
+    
+    Suggest specific occasions or settings where the garment would be ideal.
+    Encourage the reader to envision themselves wearing the product in various scenarios.
+    Examples: "Perfect for weekend brunches," "An elegant choice for your baby shower."
+    Offer Styling Suggestions:
+    
+    Provide tips on how to style the garment with other items or accessories.
+    Suggest complementary pieces or layering options (e.g., "Pair with a cozy cardigan," "Style with ankle boots for a chic look").
+    Mention how the garment can transition between casual and dressy occasions.
+    Use Emotive and Sensory Language:
+    
+    Incorporate words that appeal to emotions and senses to create a vivid image.
+    Use phrases that evoke feelings of confidence, elegance, or comfort.
+    Example: "Feel effortlessly radiant as you..."
+    Highlight Versatility and Transition:
+    
+    Emphasize how the garment adapts through different stages of maternity and beyond.
+    Point out its suitability for various times of the day or seasons.
+    Use phrases like "from day to night" or "a timeless piece for every trimester."
+    Ensure Clarity and Flow:
+    
+    Write sentences that are clear, concise, and easy to understand.
+    Maintain a smooth narrative that connects ideas logically.
+    Avoid overly complex language or industry jargon.
+    Important Guidelines:
+    
+    Do not reference numerical lengths or measurements of the garment. Focus on qualitative descriptions instead.
+    Keep your description to approximately 400 characters to maintain conciseness and readability.
+    Use a warm, inviting, and aspirational tone, matching the style of the provided examples.
+    Avoid using bullet points or lists in the description; write in full sentences and cohesive paragraphs.
+    Integrate the product details seamlessly into the description without explicitly listing them.
+    Ensure the description is unique and original, not copied from the examples.
+    Please generate a description for the following product details:
+    
+    Product Name: {product_name}
     Details:
-    Capri Shirred Dress
-    •  Length: 99cm (size small without straps)	•  Fitted bodice with gathered skirt	•  Printed woven cotton	• 100% cotton	•  Removable straps 	•  Wear as a dress with or without the straps or wear as a skirt	•  Sleeveless 	•  Non nursing
-
-    Description:
-    The Capri Shirred Dress is your go-to dress this season with endless styling possibilities. Framed with a square smocked bodice, removable straps, and gathered skirt with frill, this dress is a core wardrobe piece.
-
-    Style this dress on its own – or create an alternate look by styling it as a skirt with the Clara Relaxed Shirt tied under the bust. You can also remove the shoulder for a strapless look. 
-    ```
-
-    ```
-    Details:
-    Logan Cargo Pant
-    •  Length: 75cm inleg	• Relaxed fit	• Soft woven Tencel	• 100% lyocell	• Elastic waistband 	• Straight leg	•  Front rise 32cm (size small)	•  Leg opening 52cm (size small)
-
-    Description:
-    We know you love our Tencel Off Duty Pant, so we reimagined the style and fit into your new favourite cargo pant! Made with an elastic waistband for built-in comfort, the Logan Cargo Pant features a straight leg, side pockets, and adjustable hems so you can create your own look. More lightweight than you'd expect, these cargos are easy to dress up or down. 
-
-    Style yours with our Luxe Knit Tank Top and sneakers for easy off duty style.
-    "
-    ```
-
-    To emulate the writing style of the product descriptions provided, you should aim for a blend of descriptive elegance, practical detailing, and lifestyle integration. Here are detailed instructions to achieve this style:
-
-    Start with an Engaging Hook: Begin each description with a compelling feature that captures the essence of the product. Use adjectives that convey luxury or ease.
-
-    Focus on Fabric and Feel: Describe the materials used with sensory language that evokes a tactile response. Give the reader an idea of how the fabric feels against the skin, which is especially important for maternity wear.
-
-    Detail the Design: Highlight key design features such as "button-up front," "smocked bodice," or "removable belted waist." Be specific about the elements that add to the functionality and style, like sleeve length, type of closure, and type of neckline.
-
-    Incorporate Functionality: Since these are maternity clothes, emphasize features that add practical value, like "nursing friendly" or "adjustable waist tie." Use phrases that speak directly to the needs of the target demographic.
-
-    Set the Scene: Suggest occasions or settings where the garment could be worn. Phrases like "for casual Fridays," "perfect for your maternity shoot," or "essential for any occasion" help the reader visualize when and where they could wear the item.
-
-    Styling Suggestions: Offer fashion tips on how to complete the look. Advise on pairing the item with accessories or other pieces of clothing, for example, "pair with sneakers or sandals" or "wear with your favorite denim jacket."
-
-    Use Emotive and Sensory Language: Infuse the description with words that appeal to emotions and senses. Descriptions like "beautiful tone shines in the light" create a vivid image and an emotional connection.
-
-    Versatility and Transition: Point out the versatility of the garment, and how it can transition through various stages of maternity and different times of the day. Use phrases like "from AM to PM" or "at any stage of pregnancy and beyond."
-
-    Close with a Call-to-Action: End with a simple and effective directive that invites the reader to imagine themselves wearing the piece, such as "Step into a ready-to-go fit" or "This effortless summer dress is our go-to."
-
-    Edit for Clarity and Flow: Ensure that sentences are clear and flow smoothly. Avoid jargon that might confuse the reader, and ensure that the description is easy to follow.
-
-    Character Length: The descriptions are all 350-450 characters in length
-
-    --------
-
-    Please generate a description for the following details. DO NOT REFERENCE THE NUMERICAL LENGTHS OF THE GARMENT. IMPORTANT: KEEP YOUR DESCRIPTIONS TO 400 CHARACTERS:
-    {product_name}
-    {dp_1}	{dp_2}	{dp_3}	{dp_4} 	{dp_5}	{dp_6} 	{dp_7}  {dp_8}
+    {dp_1}
+    {dp_2}
+    {dp_3}
+    {dp_4}
+    {dp_5}
+    {dp_6}
+    {dp_7}
+    {dp_8}
     """
 
     return chat_with_gpt4(desc_prompt)
