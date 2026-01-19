@@ -74,76 +74,53 @@ def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
     return response.choices[0].message.content.strip()
 
 
-def generate_description(product_name, dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8):
+def generate_description(product_name, dp_1=None, dp_2=None, dp_3=None, dp_4=None,
+                         dp_5=None, dp_6=None, dp_7=None, dp_8=None):
+    # Clean + compact details for the model (helps prevent rambling)
+    details = [dp_1, dp_2, dp_3, dp_4, dp_5, dp_6, dp_7, dp_8]
+    details = [str(d).strip().lstrip("•").strip() for d in details if d and str(d).strip()]
+    details_block = "\n".join(f"- {d}" for d in details)
+
     desc_prompt = f"""
-    3 examples are provided below:
-
-    ```
-    Details:
-    Celest Button Through Dress
-    •  Length: 93cm (size small)	•  Relaxed Fit    	•  Printed woven viscose	• 100% viscose	•  Round Neckline  	•  Button up front is nursing friendly	•  Elbow Length Sleeve 	•  Nursing
-
-    Description:
-    One of our best-selling styles has been recreated in this beautiful, earthy-toned and warm pattern. This shirt dress with all-over  print, cuffed elbow length sleeves, an empire seam, and gathered skirt can be buttoned down, or worn open as a duster over your swimsuit or shorts. It’s the easiest throw-on-and-go dress for expecting mothers, and those nursing thanks to the buttons! 
+    You are writing a Ripe product description.
     
-    This effortless summer dress is our go-to with sneakers or slides. 
-    ```
-
-    ```
+    VOICE + TONE (must follow)
+    - Warm & human, like a trusted friend. Clear, calm, direct. Nurturing and reassuring. Confident and polished, never intimidating. :contentReference[oaicite:4]{index=4}
+    - Always warm, conversational, nurturing, with a stylish edge. :contentReference[oaicite:5]{index=5}
+    - Keep it simple, caring, genuine. No hard-sell hype, no jargon. :contentReference[oaicite:6]{index=6}
+    
+    STYLE RULES
+    - Short, clear sentences. Use contractions. Prefer no emoji. :contentReference[oaicite:7]{index=7}
+    - When in doubt: simplify and soften. :contentReference[oaicite:8]{index=8}
+    
+    WORDS TO LEAN ON (use 1–2 max, naturally)
+    - your go-to, made to live in, wear it on repeat, easy does it :contentReference[oaicite:9]{index=9}
+    - soft on skin, made to grow with you, designed to support, for every stage :contentReference[oaicite:10]{index=10}
+    - comfort-first, everyday ease, made for now and later, quietly confident :contentReference[oaicite:11]{index=11}
+    
+    GENTLE CTA (end with one, no pressure)
+    - ready when you are / take a closer look / explore more :contentReference[oaicite:12]{index=12}
+    
+    AVOID (never use)
+    - hurry, last chance, don’t miss out, shop now :contentReference[oaicite:13]{index=13}
+    - game-changer, must-have, revolutionary, disruptive, curated edit :contentReference[oaicite:14]{index=14}
+    - value-add, solutions, leverage, synergy :contentReference[oaicite:15]{index=15}
+    
+    OUTPUT REQUIREMENTS (follow exactly)
+    - Write ONE description only (no headings, no quotes, no bullet points).
+    - 2–3 short sentences, 380–420 characters (including spaces).
+    - Do NOT mention measurements/lengths.
+    - Only claim features that appear in the details (e.g., nursing friendly, adjustable waist, buttons).
+    - Include: (1) fabric/feel, (2) 2 key design features, (3) 1 simple styling suggestion, (4) gentle CTA at the end.
+    
+    PRODUCT INPUT
+    Name: {product_name}
     Details:
-    Capri Shirred Dress
-    •  Length: 99cm (size small without straps)	•  Fitted bodice with gathered skirt	•  Printed woven cotton	• 100% cotton	•  Removable straps 	•  Wear as a dress with or without the straps or wear as a skirt	•  Sleeveless 	•  Non nursing
-
-    Description:
-    The Capri Shirred Dress is your go-to dress this season with endless styling possibilities. Framed with a square smocked bodice, removable straps, and gathered skirt with frill, this dress is a core wardrobe piece.
-
-    Style this dress on its own – or create an alternate look by styling it as a skirt with the Clara Relaxed Shirt tied under the bust. You can also remove the shoulder for a strapless look. 
-    ```
-
-    ```
-    Details:
-    Logan Cargo Pant
-    •  Length: 75cm inleg	• Relaxed fit	• Soft woven Tencel	• 100% lyocell	• Elastic waistband 	• Straight leg	•  Front rise 32cm (size small)	•  Leg opening 52cm (size small)
-
-    Description:
-    We know you love our Tencel Off Duty Pant, so we reimagined the style and fit into your new favourite cargo pant! Made with an elastic waistband for built-in comfort, the Logan Cargo Pant features a straight leg, side pockets, and adjustable hems so you can create your own look. More lightweight than you'd expect, these cargos are easy to dress up or down. 
-
-    Style yours with our Luxe Knit Tank Top and sneakers for easy off duty style.
-    "
-    ```
-
-    To emulate the writing style of the product descriptions provided, you should aim for a blend of descriptive elegance, practical detailing, and lifestyle integration. Here are detailed instructions to achieve this style:
-
-    Start with an Engaging Hook: Begin each description with a compelling feature that captures the essence of the product. Use adjectives that convey luxury or ease.
-
-    Focus on Fabric and Feel: Describe the materials used with sensory language that evokes a tactile response. Give the reader an idea of how the fabric feels against the skin, which is especially important for maternity wear.
-
-    Detail the Design: Highlight key design features such as "button-up front," "smocked bodice," or "removable belted waist." Be specific about the elements that add to the functionality and style, like sleeve length, type of closure, and type of neckline.
-
-    Incorporate Functionality: Since these are maternity clothes, emphasize features that add practical value, like "nursing friendly" or "adjustable waist tie." Use phrases that speak directly to the needs of the target demographic.
-
-    Set the Scene: Suggest occasions or settings where the garment could be worn. Phrases like "for casual Fridays," "perfect for your maternity shoot," or "essential for any occasion" help the reader visualize when and where they could wear the item.
-
-    Styling Suggestions: Offer fashion tips on how to complete the look. Advise on pairing the item with accessories or other pieces of clothing, for example, "pair with sneakers or sandals" or "wear with your favorite denim jacket."
-
-    Use Emotive and Sensory Language: Infuse the description with words that appeal to emotions and senses. Descriptions like "beautiful tone shines in the light" create a vivid image and an emotional connection.
-
-    Versatility and Transition: Point out the versatility of the garment, and how it can transition through various stages of maternity and different times of the day. Use phrases like "from AM to PM" or "at any stage of pregnancy and beyond."
-
-    Close with a Call-to-Action: End with a simple and effective directive that invites the reader to imagine themselves wearing the piece, such as "Step into a ready-to-go fit" or "This effortless summer dress is our go-to."
-
-    Edit for Clarity and Flow: Ensure that sentences are clear and flow smoothly. Avoid jargon that might confuse the reader, and ensure that the description is easy to follow.
-
-    Character Length: The descriptions are all 350-450 characters in length
-
-    --------
-
-    Please generate a description for the following details. DO NOT REFERENCE THE NUMERICAL LENGTHS OF THE GARMENT. IMPORTANT: KEEP YOUR DESCRIPTIONS TO 400 CHARACTERS:
-    {product_name}
-    {dp_1}	{dp_2}	{dp_3}	{dp_4} 	{dp_5}	{dp_6} 	{dp_7}  {dp_8}
-    """
+    {details_block}
+    """.strip()
 
     return chat_with_gpt4(desc_prompt)
+
 
 def format_description(description):
     return '<br><br>'.join(filter(None, description.split('\n')))
