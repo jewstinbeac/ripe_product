@@ -60,7 +60,7 @@ def retry_with_exponential_backoff(
     return wrapper
 
 @retry_with_exponential_backoff
-def chat_with_gpt4(prompt, model="gpt-4", max_tokens=200):
+def chat_with_gpt4(prompt, model="gpt-4.1-2025-04-14", max_tokens=200):
     openai.api_key = api_key
     
     response = openai.chat.completions.create(
